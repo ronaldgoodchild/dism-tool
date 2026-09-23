@@ -1,0 +1,12 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  syntax:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Byte-compile every Python file
+        run: python -m compileall -q .
