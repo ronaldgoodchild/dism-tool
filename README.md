@@ -4,6 +4,11 @@ A free **Windows image servicing and deployment GUI** built on `dism.exe`, `disk
 
 > Built by a working IT technician who builds and services Windows images.
 
+## Screenshots
+
+![Image servicing tab (personal paths blurred)](docs/screenshots/main.png)
+*Image servicing tab (personal paths blurred)*
+
 ## Features
 
 - **Image Servicing** - mount / unmount / commit images, image info with a smart index picker, cleanup, health checks

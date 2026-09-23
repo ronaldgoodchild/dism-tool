@@ -3,7 +3,7 @@
 Comment on (or open) an issue first so we don't duplicate work.
 
 ## Good first issues
-- [ ] Add screenshots to the README
+- [x] Add screenshots to the README
 - [ ] Replace `wmic` (removed from recent Windows 11 builds) with PowerShell/CIM for the disk list
 - [ ] Split the 3,500-line `dism_tool.py` into modules (dialogs / servicing / deploy / storage)
 - [ ] Add a `--version` flag
