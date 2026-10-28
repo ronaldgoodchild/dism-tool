@@ -7,6 +7,9 @@ Requires: Python 3.8+, Windows, Run as Administrator.
 import ctypes, json, os, re, subprocess, sys, tempfile, threading, tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, simpledialog, ttk
 from datetime import datetime
+import argparse
+
+APP_VERSION = "1.0"
 
 # ── Executables ───────────────────────────────────────────────────────────────
 DISM_EXE  = r"C:\Windows\System32\dism.exe"
@@ -3664,7 +3667,14 @@ class DismTool:
 
 
 if __name__ == "__main__":
-    import tkinter as tk
+    parser = argparse.ArgumentParser(description="DISM Tool - Windows image servicing and deployment GUI")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"DISM Tool {APP_VERSION}",
+    )
+    parser.parse_args()
+
     root = tk.Tk()
     DismTool(root)
     root.mainloop()
