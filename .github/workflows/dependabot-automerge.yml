@@ -1,0 +1,44 @@
+name: Dependabot auto-merge (patch updates)
+
+# Merges a Dependabot pull request ONLY when this repo's CI has passed on it AND every update in it is a patch
+# release (x.y.Z). Minor and major updates are left open for a human to review.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: Merge passing patch updates
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge if patch-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          pr=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number,headRefOid \
+                 --jq ".[] | select(.headRefOid==\"$SHA\") | .number")
+          if [ -z "$pr" ]; then echo "No open pull request for this commit - nothing to do."; exit 0; fi
+          msg=$(gh api "repos/$REPO/commits/$SHA" --jq .commit.message)
+          types=$(printf '%s\n' "$msg" | grep -o 'update-type: version-update:semver-[a-z]*' | sort -u || true)
+          if [ -z "$types" ]; then echo "No update type found in the commit message - leaving PR #$pr for review."; exit 0; fi
+          if [ "$types" = "update-type: version-update:semver-patch" ]; then
+            echo "PR #$pr is patch-only and CI passed - merging."
+            gh pr merge "$pr" --repo "$REPO" --squash --delete-branch
+          else
+            echo "PR #$pr is not patch-only, leaving it for review:"
+            echo "$types"
+          fi
